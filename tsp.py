@@ -93,5 +93,47 @@ tsp = TSP(
 
 ch = tsp.chromosome()
 
-print(tsp.initialize_population())
-print(tsp.compute_population_fitness())
+data = tsp.initialize_population()
+fitness = tsp.compute_population_fitness()
+
+# parent1, parent2 =
+tsp.parent_selection()
+tsp.crossover()
+
+# print(data[parent1])
+# print(fitness[parent1])
+# print(data[parent2])
+# print(fitness[parent2])
+
+
+# print(tsp.crossover())
+
+
+# arr1 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+# arr2 = [9, 3, 7, 8, 2, 6, 5, 1, 4]
+
+# length = len(arr1)
+# start, end = sorted(random.sample(range(length), 2))
+# offspring = [None] * length
+
+# print("arr1", arr1)
+# print("arr2", arr2)
+# offspring[start:end] = arr1[start:end]
+
+# check = end
+# remaining_cities = []
+
+# for i in range(end, length + start + end):
+#     index = i % length
+#     arr2Remaining = arr2[index]
+#     # print(arr2[index], i, index)
+#     if arr2Remaining not in offspring:
+#         remaining_cities.append(arr2Remaining)
+# remaining_cities.reverse()
+
+
+# for i in range(end, length + start):
+#     index = i % length
+#     offspring[index % length] = remaining_cities.pop()
+
+# print(offspring)

@@ -35,20 +35,22 @@ class EvolutionaryAlgorithm:
         self.no_of_iterations = no_of_iterations
         self.parent_selection_scheme = 1
         self.survivor_selection_scheme = 1
+        self.offsprings = []
 
     def initialize_population(self) -> None:
         # Initialize the population with random individuals
         self.population = {i: self.chromosome() for i in range(self.population_size)}
+        return self.population
 
     def parent_selection(self) -> None:
         """
         Performs selection to choose parents for reproduction.
         """
-        if self.parent_selection_scheme  == 1:
+        if self.parent_selection_scheme == 1:
             self.parents = self.fitness_proportionate_selection(self.no_of_offsprings)
-        elif self.parent_selection_scheme  == 2:
+        elif self.parent_selection_scheme == 2:
             self.parents = self.rank_based_selection(self.no_of_offsprings)
-        elif self.parent_selection_scheme  == 3:
+        elif self.parent_selection_scheme == 3:
             self.parents = self.binary_tournament_selection(self.no_of_offsprings)
         elif self.parent_selection_scheme == 4:
             self.parents = self.truncation_selection(self.no_of_offsprings)
@@ -57,22 +59,42 @@ class EvolutionaryAlgorithm:
         else:
             print("Invalid selection scheme")
 
-    def crossover(self):
+    def crossover(self) -> None:
+        # helper
+        self.offsprings = []
+
+        def fillRest(arr, offspring) -> None:
+            remaining_cities = []
+            for i in range(end, length + start + end):
+                index = i % length
+                remaining = arr[index]
+                # print(arr2[index], i, index)
+                if remaining not in offspring:
+                    remaining_cities.append(remaining)
+            remaining_cities.reverse()
+
+            for i in range(end, length + start):
+                index = i % length
+                offspring[index % length] = remaining_cities.pop()
+
         # Perform crossover to create offspring
-        parent1, parent2 = self.parents
+        for index in range(0, len(self.parents), 2):
+            chromosome_parent1 = self.population[self.parents[index]]
+            chromosome_parent2 = self.population[self.parents[index + 1]]
 
-        chromosome_parent1 = self.population[parent1]
-        chromosome_parent2 = self.population[parent2]
+            length = len(chromosome_parent1)
+            start, end = sorted(random.sample(range(length), 2))
+            offspring1 = [None] * length
+            offspring2 = [None] * length
 
-        length = len(chromosome_parent1)
-        start, end = sorted(random.sample(range(length), 2))
+            offspring1[start:end] = chromosome_parent1[start:end]
+            offspring2[start:end] = chromosome_parent2[start:end]
 
-        offspring = chromosome_parent1[start:end]
-        remaining_cities = [
-            city for city in chromosome_parent2 if city not in offspring
-        ]
-        offspring.extend(remaining_cities)
-        return offspring
+            fillRest(chromosome_parent2, offspring1)
+            fillRest(chromosome_parent1, offspring2)
+
+            self.offsprings.append(offspring1)
+            self.offsprings.append(offspring2)
 
     def mutation(self):
         # Perform mutation on the offspring
@@ -82,11 +104,11 @@ class EvolutionaryAlgorithm:
         """
         Performs selection to choose parents for reproduction.
         """
-        if self.survivor_selection_scheme  == 1:
+        if self.survivor_selection_scheme == 1:
             self.population = self.fitness_proportionate_selection(self.population)
-        elif self.survivor_selection_scheme  == 2:
+        elif self.survivor_selection_scheme == 2:
             self.population = self.rank_based_selection(self.population)
-        elif self.survivor_selection_scheme  == 3:
+        elif self.survivor_selection_scheme == 3:
             self.population = self.binary_tournament_selection(self.population)
         elif self.survivor_selection_scheme == 4:
             self.population = self.truncation_selection(self.population)
@@ -95,31 +117,36 @@ class EvolutionaryAlgorithm:
         else:
             print("Invalid selection scheme")
 
-
     def run(self):
         # Run the evolutionary algorithm
         self.initialize_population()
         pass
 
     # Selection schemes
-    def fitness_proportionate_selection(self, selection_size)-> list:
+    def fitness_proportionate_selection(self, selection_size) -> list:
         total_fitness = sum(self.fitness_dictionary.values())
         probabilities = [
             fitness / total_fitness for fitness in self.fitness_dictionary.values()
         ]
         return random.choices(
-            list(self.fitness_dictionary.keys()), weights=probabilities, k=selection_size
+            list(self.fitness_dictionary.keys()),
+            weights=probabilities,
+            k=selection_size,
         )
 
-    def rank_based_selection(self, selection_size)-> list:
-        temp_sorted = dict(sorted(self.fitness_dictionary.items(), key=lambda item: item[1], reverse=True))
+    def rank_based_selection(self, selection_size) -> list:
+        temp_sorted = dict(
+            sorted(
+                self.fitness_dictionary.items(), key=lambda item: item[1], reverse=True
+            )
+        )
         ranks = [i for i in range(1, len(temp_sorted) + 1)]
         probabilities = [rank / sum(ranks) for rank in ranks]
         return random.choices(
             list(temp_sorted.keys()), weights=probabilities, k=selection_size
         )
 
-    def binary_tournament_selection(self, selection_size)-> list:
+    def binary_tournament_selection(self, selection_size) -> list:
         tournament_selected = []
         for i in range(selection_size):
             parent1, parent2 = random.choices(list(self.fitness_dictionary.keys()), k=2)
@@ -133,7 +160,5 @@ class EvolutionaryAlgorithm:
         trunc = dict(sorted(self.fitness_dictionary.items(), key=lambda item: item[1]))
         return list(trunc.keys())[:selection_size]
 
-    def random_selection(self, selection_size)-> list:
-        return random.choices(
-            list(self.fitness_dictionary.keys()), k=selection_size
-        )
+    def random_selection(self, selection_size) -> list:
+        return random.choices(list(self.fitness_dictionary.keys()), k=selection_size)
