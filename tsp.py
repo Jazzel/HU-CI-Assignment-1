@@ -71,11 +71,10 @@ class TSP(EvolutionaryAlgorithm):
         fitness += self.distance_matrix[chromosome[self.dimension - 1]][chromosome[0]]
         return fitness
 
-    def compute_population_fitness(self) -> list:
+    def compute_population_fitness(self) -> dict:
         fitness_dictionary = {}
         for individual, chromosome in self.population.items():
             fitness_dictionary[individual] = self.evaluate_fitness(chromosome)
-
         self.fitness_dictionary = fitness_dictionary
         return fitness_dictionary
 
