@@ -8,19 +8,33 @@ class TSP(EvolutionaryAlgorithm):
     def __init__(
         self,
         filename,
-        selection_scheme,
+        parent_selection_scheme,
+        survival_selection_scheme,
         population_size,
-        max_generations,
+        no_of_generations,
+        no_of_offsprings,
+        mutation_rate,
+        no_of_iterations,
     ):
         super().__init__(
-            selection_scheme,
+            parent_selection_scheme,
+            survival_selection_scheme,
             population_size,
-            max_generations,
+            no_of_generations,
+            no_of_offsprings,
+            mutation_rate,
+            no_of_iterations,
         )
+        self.parent_selection_scheme = parent_selection_scheme
+        self.survival_selection_scheme = survival_selection_scheme
+        self.no_of_offsprings = no_of_offsprings
         self.population_size = population_size
-        self.max_generations = max_generations
+        self.no_of_generations = no_of_generations
+        self.no_of_offsprings = no_of_offsprings
+        self.mutation_rate = mutation_rate
+        self.no_of_iterations = no_of_iterations
+
         self.filename = filename
-        self.selection_scheme = selection_scheme
         self.name = ""
         self.comment1 = ""
         self.comment2 = ""
@@ -71,34 +85,34 @@ class TSP(EvolutionaryAlgorithm):
         fitness += self.distance_matrix[chromosome[self.dimension - 1]][chromosome[0]]
         return fitness
 
-    def compute_population_fitness(self) -> dict:
+    def compute_population_fitness(self, population: dict) -> dict:
         fitness_dictionary = {}
-        for individual, chromosome in self.population.items():
+        for individual, chromosome in population.items():
             fitness_dictionary[individual] = self.evaluate_fitness(chromosome)
-        self.fitness_dictionary = fitness_dictionary
         return fitness_dictionary
 
 
 filename = "qa194.tsp"
-selection_scheme = 1
 population_size = 30
-max_generations = 50
+no_of_offsprings = 10
+no_of_generations = 50
+mutation_rate = 0.5
+no_of_iterations = 10
+parent_selection = 1
+survival_selection = 4
 
 tsp = TSP(
     filename=filename,
-    selection_scheme=selection_scheme,
+    parent_selection_scheme=parent_selection,
+    survival_selection_scheme=survival_selection,
     population_size=population_size,
-    max_generations=max_generations,
+    no_of_generations=no_of_generations,
+    no_of_offsprings=no_of_offsprings,
+    mutation_rate=mutation_rate,
+    no_of_iterations=no_of_iterations,
 )
+tsp.run()
 
-ch = tsp.chromosome()
-
-data = tsp.initialize_population()
-fitness = tsp.compute_population_fitness()
-
-# parent1, parent2 =
-tsp.parent_selection()
-tsp.crossover()
 
 # print(data[parent1])
 # print(fitness[parent1])

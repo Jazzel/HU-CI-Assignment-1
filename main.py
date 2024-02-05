@@ -22,9 +22,11 @@ class EvolutionaryAlgorithm:
 
     def __init__(
         self,
+        parent_selection_scheme: int = 1,
+        survival_selection_scheme: int = 1,
         population_size: int = 30,
-        no_of_offsprings: int = 10,
         no_of_generations: int = 50,
+        no_of_offsprings: int = 10,
         mutation_rate: float = 0.5,
         no_of_iterations: int = 10,
     ) -> None:
@@ -33,9 +35,9 @@ class EvolutionaryAlgorithm:
         self.no_of_generations = no_of_generations
         self.mutation_rate = mutation_rate
         self.no_of_iterations = no_of_iterations
-        self.parent_selection_scheme = 1
-        self.survivor_selection_scheme = 1
-        self.offsprings = []
+        self.parent_selection_scheme = parent_selection_scheme
+        self.survivor_selection_scheme = survival_selection_scheme
+        self.offsprings = {}
 
     def initialize_population(self) -> None:
         # Initialize the population with random individuals
@@ -61,7 +63,8 @@ class EvolutionaryAlgorithm:
 
     def crossover(self) -> None:
         # helper
-        self.offsprings = []
+        self.offsprings = {}
+
         def fillRest(arr, offspring) -> None:
             remaining_cities = []
             for i in range(end, length + start + end):
@@ -77,6 +80,7 @@ class EvolutionaryAlgorithm:
                 offspring[index % length] = remaining_cities.pop()
 
         # Perform crossover to create offspring
+        d_index = len(self.population)
         for index in range(0, len(self.parents), 2):
             chromosome_parent1 = self.population[self.parents[index]]
             chromosome_parent2 = self.population[self.parents[index + 1]]
@@ -92,36 +96,76 @@ class EvolutionaryAlgorithm:
             fillRest(chromosome_parent2, offspring1)
             fillRest(chromosome_parent1, offspring2)
 
-            self.offsprings.append(offspring1)
-            self.offsprings.append(offspring2)
+            self.offsprings[d_index] = offspring1
+            self.offsprings[d_index + 1] = offspring2
+            d_index += 2
 
     def mutation(self) -> None:
-        for i in range(len(self.offsprings)):
-            index1 = random.randint(0,len(self.offsprings[i]) - 1)
-            index2 = random.randint(0,len(self.offsprings[i]) - 1)
-            self.offsprings[i][index1], self.offsprings[i][index2] = self.offsprings[i][index2], self.offsprings[i][index1]
+
+        for individual, chromosome in self.offsprings.items():
+            index1 = random.randint(0, len(self.offsprings[individual]) - 1)
+            index2 = random.randint(0, len(self.offsprings[individual]) - 1)
+
+            self.offsprings[individual][index1], self.offsprings[individual][index2] = (
+                self.offsprings[individual][index2],
+                self.offsprings[individual][index1],
+            )
 
     def survivor_selection(self) -> None:
         """
         Performs selection to choose parents for reproduction.
         """
+        survivers = []
         if self.survivor_selection_scheme == 1:
-            self.population = self.fitness_proportionate_selection(self.population)
+            survivers = self.fitness_proportionate_selection(self.population_size)
         elif self.survivor_selection_scheme == 2:
-            self.population = self.rank_based_selection(self.population)
+            survivers = self.rank_based_selection(self.population_size)
         elif self.survivor_selection_scheme == 3:
-            self.population = self.binary_tournament_selection(self.population)
+            survivers = self.binary_tournament_selection(self.population_size)
         elif self.survivor_selection_scheme == 4:
-            self.population = self.truncation_selection(self.population)
+            survivers = self.truncation_selection(self.population_size)
         elif self.survivor_selection_scheme == 5:
-            self.population = self.random_selection(self.population)
+            survivers = self.random_selection(self.population_size)
         else:
             print("Invalid selection scheme")
 
+        # print(len(set(survivers)), sorted(survivers))
+
+        updatedPopulation = {}
+        for index in self.population.keys():
+            if index in survivers:
+                updatedPopulation[index] = self.population[index]
+        self.population = updatedPopulation
+
     def run(self):
         # Run the evolutionary algorithm
+        iteration = 1
         self.initialize_population()
-        pass
+        while iteration <= 1:
+            print(f"Iteration {iteration}")
+            print("population:", len(self.population))
+            self.fitness_dictionary = self.compute_population_fitness(self.population)
+            print("fitness_dictionary:", len(self.fitness_dictionary))
+            self.parent_selection()
+            print("parents:", len(self.parents))
+            self.crossover()
+            self.mutation()
+            print(len(self.offsprings))
+            self.fitness_dictionary = {
+                **self.fitness_dictionary,
+                **self.compute_population_fitness(self.offsprings),
+            }
+            self.population = {
+                **self.population,
+                **self.offsprings,
+            }
+            print(
+                "fitness_dictionary (offsprings added):", len(self.fitness_dictionary)
+            )
+            print("population (offsprings added):", len(self.fitness_dictionary))
+            self.survivor_selection()
+            print("population (survivors):", len(self.population))
+            iteration += 1
 
     # Selection schemes
     def fitness_proportionate_selection(self, selection_size) -> list:
@@ -136,13 +180,16 @@ class EvolutionaryAlgorithm:
         )
 
     def rank_based_selection(self, selection_size) -> list:
+
         temp_sorted = dict(
             sorted(
                 self.fitness_dictionary.items(), key=lambda item: item[1], reverse=True
             )
         )
+
         ranks = [i for i in range(1, len(temp_sorted) + 1)]
         probabilities = [rank / sum(ranks) for rank in ranks]
+
         return random.choices(
             list(temp_sorted.keys()), weights=probabilities, k=selection_size
         )
