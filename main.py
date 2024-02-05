@@ -62,7 +62,6 @@ class EvolutionaryAlgorithm:
     def crossover(self) -> None:
         # helper
         self.offsprings = []
-
         def fillRest(arr, offspring) -> None:
             remaining_cities = []
             for i in range(end, length + start + end):
@@ -96,9 +95,11 @@ class EvolutionaryAlgorithm:
             self.offsprings.append(offspring1)
             self.offsprings.append(offspring2)
 
-    def mutation(self):
-        # Perform mutation on the offspring
-        pass
+    def mutation(self) -> None:
+        for i in range(len(self.offsprings)):
+            index1 = random.randint(0,len(self.offsprings[i]) - 1)
+            index2 = random.randint(0,len(self.offsprings[i]) - 1)
+            self.offsprings[i][index1], self.offsprings[i][index2] = self.offsprings[i][index2], self.offsprings[i][index1]
 
     def survivor_selection(self) -> None:
         """
