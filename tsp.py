@@ -95,11 +95,11 @@ class TSP(EvolutionaryAlgorithm):
 filename = "qa194.tsp"
 population_size = 30
 no_of_offsprings = 10
-no_of_generations = 50
+no_of_generations = 1000
 mutation_rate = 0.5
 no_of_iterations = 10
-parent_selection = 1
-survival_selection = 4
+parent_selection = 3
+survival_selection = 1
 
 tsp = TSP(
     filename=filename,

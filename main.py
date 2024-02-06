@@ -37,7 +37,6 @@ class EvolutionaryAlgorithm:
         self.no_of_iterations = no_of_iterations
         self.parent_selection_scheme = parent_selection_scheme
         self.survivor_selection_scheme = survival_selection_scheme
-        self.offsprings = {}
 
     def initialize_population(self) -> None:
         # Initialize the population with random individuals
@@ -64,7 +63,6 @@ class EvolutionaryAlgorithm:
     def crossover(self) -> None:
         # helper
         self.offsprings = {}
-
         def fillRest(arr, offspring) -> None:
             remaining_cities = []
             for i in range(end, length + start + end):
@@ -101,15 +99,14 @@ class EvolutionaryAlgorithm:
             d_index += 2
 
     def mutation(self) -> None:
-
-        for individual, chromosome in self.offsprings.items():
-            index1 = random.randint(0, len(self.offsprings[individual]) - 1)
-            index2 = random.randint(0, len(self.offsprings[individual]) - 1)
-
-            self.offsprings[individual][index1], self.offsprings[individual][index2] = (
-                self.offsprings[individual][index2],
-                self.offsprings[individual][index1],
-            )
+        for swaps in range(int(self.mutation_rate*10)):
+            for individual, chromosome in self.offsprings.items():
+                    index1 = random.randint(0, len(self.offsprings[individual]) - 1)
+                    index2 = random.randint(0, len(self.offsprings[individual]) - 1)
+                    self.offsprings[individual][index1], self.offsprings[individual][index2] = (
+                        self.offsprings[individual][index2],
+                        self.offsprings[individual][index1],
+                    )
 
     def survivor_selection(self) -> None:
         """
@@ -141,16 +138,16 @@ class EvolutionaryAlgorithm:
         # Run the evolutionary algorithm
         iteration = 1
         self.initialize_population()
-        while iteration <= 1:
-            print(f"Iteration {iteration}")
-            print("population:", len(self.population))
+        while iteration <= self.no_of_generations:
+            #print(f"Iteration {iteration}")
+            #print("population:", len(self.population))
             self.fitness_dictionary = self.compute_population_fitness(self.population)
-            print("fitness_dictionary:", len(self.fitness_dictionary))
+            #print("fitness_dictionary:", len(self.fitness_dictionary))
             self.parent_selection()
-            print("parents:", len(self.parents))
+            #print("parents:", len(self.parents))
             self.crossover()
             self.mutation()
-            print(len(self.offsprings))
+            #print("offsprings:",len(self.offsprings))
             self.fitness_dictionary = {
                 **self.fitness_dictionary,
                 **self.compute_population_fitness(self.offsprings),
@@ -159,12 +156,14 @@ class EvolutionaryAlgorithm:
                 **self.population,
                 **self.offsprings,
             }
-            print(
-                "fitness_dictionary (offsprings added):", len(self.fitness_dictionary)
-            )
-            print("population (offsprings added):", len(self.fitness_dictionary))
+            #print(
+            #    "fitness_dictionary (offsprings added):", len(self.fitness_dictionary)
+            #)
+            #print("population (offsprings added):", len(self.fitness_dictionary))
             self.survivor_selection()
-            print("population (survivors):", len(self.population))
+            #print("population (survivors):", len(self.population))
+            avg_fitness = round(sum(self.fitness_dictionary.values())/30,2)
+            print("avg_fitness:", avg_fitness)
             iteration += 1
 
     # Selection schemes
