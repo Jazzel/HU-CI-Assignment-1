@@ -1,7 +1,9 @@
 import random
 
+from selectionSchemes import SelectionScheme
 
-class EvolutionaryAlgorithm:
+
+class EvolutionaryAlgorithm(SelectionScheme):
     """
     A class representing an evolutionary algorithm.
 
@@ -114,14 +116,12 @@ class EvolutionaryAlgorithm:
                     self.offsprings[individual][index2],
                     self.offsprings[individual][index1],
                 )
-    
 
     def survivor_selection(self) -> None:
         """
         Performs selection to choose parents for reproduction.
         """
         survivers = []
-        fittest_individual = max(self.fitness_dictionary, key=self.fitness_dictionary.get)
         if self.survivor_selection_scheme == 1:
             survivers = self.fitness_proportionate_selection(self.population_size - 1)
         elif self.survivor_selection_scheme == 2:
@@ -136,7 +136,7 @@ class EvolutionaryAlgorithm:
             print("Invalid selection scheme")
 
         updatedPopulation = []
-        updatedPopulation.append(self.population[fittest_individual])
+        # updatedPopulation.append(self.population[fittest_individual])
         for index in survivers:
             updatedPopulation.append(self.population[index])
         self.population = {
@@ -152,78 +152,43 @@ class EvolutionaryAlgorithm:
         while iteration <= self.no_of_generations:
             # while iteration <= 2:
             print(f"Iteration {iteration}")
-            #print("population:", len(self.population))
+            # print("population:", len(self.population))
             self.fitness_dictionary = self.compute_population_fitness(self.population)
-            #print("fitness_dictionary:", len(self.fitness_dictionary))
+            # print("fitness_dictionary:", len(self.fitness_dictionary))
+
+            fittest_individual = self.population[
+                max(self.fitness_dictionary, key=self.fitness_dictionary.get)
+            ]
+
             self.parent_selection()
-            #print("parents:", len(self.parents))
+            # print("parents:", len(self.parents))
             self.crossover()
             self.mutation()
-            #print("offsprings:", len(self.offsprings))
+            # print("offsprings:", len(self.offsprings))
 
             updatedPopulation = list(self.population.values()) + list(
                 self.offsprings.values()
             )
 
             self.population = {
-                i: updatedPopulation[i] for i in range(len(updatedPopulation))
+                i: updatedPopulation[i] for i in range(0, len(updatedPopulation))
             }
 
             self.fitness_dictionary = self.compute_population_fitness(self.population)
 
-            #print(
-            #    "fitness_dictionary (offsprings added):", len(self.fitness_dictionary)
-            #)
-            #print("population (offsprings added):", len(self.fitness_dictionary))
+            # print(
+            #     "fitness_dictionary (offsprings added):", len(self.fitness_dictionary)
+            # )
+            # print("population (offsprings added):", len(self.fitness_dictionary))
             self.survivor_selection()
-            #print("population (survivors):", len(self.population))
+            self.population[len(self.population)] = fittest_individual
+
+            self.fitness_dictionary = self.compute_population_fitness(self.population)
+
+            # print("population (survivors):", len(self.population))
             avg_fitness = round(sum(self.fitness_dictionary.values()) / 30, 2)
             fitnesses.append(avg_fitness)
             print("avg_fitness:", avg_fitness)
             iteration += 1
         print(min(fitnesses))
         print(max(fitnesses))
-
-    # Selection schemes
-    def fitness_proportionate_selection(self, selection_size) -> list:
-        total_fitness = sum(self.fitness_dictionary.values())
-        probabilities = [
-            fitness / total_fitness for fitness in self.fitness_dictionary.values()
-        ]
-        return random.choices(
-            list(self.fitness_dictionary.keys()),
-            weights=probabilities,
-            k=selection_size,
-        )
-
-    def rank_based_selection(self, selection_size) -> list:
-
-        temp_sorted = dict(
-            sorted(
-                self.fitness_dictionary.items(), key=lambda item: item[1], reverse=True
-            )
-        )
-
-        ranks = [i for i in range(1, len(temp_sorted) + 1)]
-        probabilities = [rank / sum(ranks) for rank in ranks]
-
-        return random.choices(
-            list(temp_sorted.keys()), weights=probabilities, k=selection_size
-        )
-
-    def binary_tournament_selection(self, selection_size) -> list:
-        tournament_selected = []
-        for i in range(selection_size):
-            parent1, parent2 = random.choices(list(self.fitness_dictionary.keys()), k=2)
-            if self.fitness_dictionary[parent1] > self.fitness_dictionary[parent2]:
-                tournament_selected.append(parent1)
-            else:
-                tournament_selected.append(parent2)
-        return tournament_selected
-
-    def truncation_selection(self, selection_size) -> list:
-        trunc = dict(sorted(self.fitness_dictionary.items(), key=lambda item: item[1]))
-        return list(trunc.keys())[:selection_size]
-
-    def random_selection(self, selection_size) -> list:
-        return random.choices(list(self.fitness_dictionary.keys()), k=selection_size)
