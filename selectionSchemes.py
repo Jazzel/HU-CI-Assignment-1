@@ -1,13 +1,13 @@
 import random
 
 
+    # Selection schemes
 class SelectionScheme:
 
-    # Selection schemes
     def fitness_proportionate_selection(self, selection_size) -> list:
-        total_fitness = sum(self.fitness_dictionary.values())
+        total_fitness = sum( 1/individual_fitness for individual_fitness in self.fitness_dictionary.values())
         probabilities = [
-            fitness / total_fitness for fitness in self.fitness_dictionary.values()
+            ((1/fitness) / total_fitness) for fitness in self.fitness_dictionary.values()
         ]
         return random.choices(
             list(self.fitness_dictionary.keys()),
@@ -16,7 +16,6 @@ class SelectionScheme:
         )
 
     def rank_based_selection(self, selection_size) -> list:
-
         temp_sorted = dict(
             sorted(
                 self.fitness_dictionary.items(), key=lambda item: item[1], reverse=True
