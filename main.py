@@ -146,7 +146,7 @@ class EvolutionaryAlgorithm(SelectionScheme):
     def run(self):
         # Run the evolutionary algorithm
         iteration = 1
-
+        fitttest_individual =[]
         fitnesses = []
         self.initialize_population()
         while iteration <= self.no_of_generations:
@@ -159,7 +159,6 @@ class EvolutionaryAlgorithm(SelectionScheme):
             fittest_individual = self.population[
                 max(self.fitness_dictionary, key=self.fitness_dictionary.get)
             ]
-
             self.parent_selection()
             # print("parents:", len(self.parents))
             self.crossover()
@@ -192,3 +191,10 @@ class EvolutionaryAlgorithm(SelectionScheme):
             iteration += 1
         print(min(fitnesses))
         print(max(fitnesses))
+        lst = []
+        for i in range(len(fittest_individual)):
+            if fittest_individual[i] not in lst:
+                lst.append(fittest_individual[i])
+            else:
+                print("Duplicate")
+            
