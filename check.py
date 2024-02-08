@@ -1,2 +1,2 @@
-if True:
-    print("JSSP.py is correct")
+for i in range(10):
+    print(i)

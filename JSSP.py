@@ -44,28 +44,57 @@ class JSSP(EvolutionaryAlgorithm):
         with open(self.filename, "r") as f:
             self.comment = f.readline().strip()
             self.operations = f.readline().strip().split()
-            self.total_machines = int(self.operations[0])
-            self.total_jobs = int(self.operations[1])
-            line = f.readline().strip()
+            self.total_machines = int(self.operations[1])
+            self.total_jobs = int(self.operations[0])
             self.operations_data = {}
             job_no = 0
-            while True:
-                try:
-                    raw_data = line.split()
-                    for i in range(0,len(raw_data),2):
-                        self.operations_data[tuple(job_no,raw_data[i])] = raw_data[i+1]
-                    line = f.readline().strip()
-                    job +=1 
-                except EOFError:
-                    break
-    
+
+            for line in f:
+                if not line.strip():
+                    continue
+                numbers = line.split()
+                for i in range(0, len(numbers), 2):
+                    self.operations_data[(job_no, int(numbers[i]))] = int(
+                        numbers[i + 1]
+                    )
+                job_no += 1
+
     def chromosome(self) -> list:
         temp = list(self.operations_data.keys())
         arr = [i for i in temp]
         random.shuffle(arr)
+
         return arr
 
     def evaluate_fitness(self, chromosome) -> float:
+<<<<<<< HEAD
+        self.machine_process_time = {
+            machine: 0 for machine in range(self.total_machines)
+        }
+        self.job_process_time = {job: 0 for job in range(self.total_jobs)}
+        self.timings = {time: [0, 0] for time in self.operations_data.keys()}
+        for i in range(len(chromosome)):
+            current_process_time = self.operations_data[chromosome[i]]
+            job, machine = chromosome[i]
+            end_process_time = (
+                max(self.machine_process_time[machine], self.job_process_time[job])
+                + current_process_time
+            )
+            self.timings[chromosome[i]] = [
+                max(self.machine_process_time[machine], self.job_process_time[job]),
+                end_process_time,
+            ]
+            self.machine_process_time[machine] = end_process_time
+            self.job_process_time[job] = end_process_time
+
+        return float(
+            max(
+                max(self.machine_process_time.values()),
+                max(self.job_process_time.values()),
+            )
+        )
+
+=======
         machine_process_time= {machine:0 for machine in range(self.total_machines)}
         job_process_time = {job:0 for job in range(self.total_jobs)}
         timings = {time: [0, 0] for time in self.operations_data.values()}
@@ -78,20 +107,22 @@ class JSSP(EvolutionaryAlgorithm):
             job_process_time[job] = end_process_time
         return float(max(max(machine_process_time.values()),max(job_process_time.values())))
     
+>>>>>>> ebeff02933ff394919daab682d8a447738de0fd3
     def compute_population_fitness(self, population: dict) -> dict:
         fitness_dictionary = {}
         for individual, chromosome in population.items():
             fitness_dictionary[individual] = self.evaluate_fitness(chromosome)
         return fitness_dictionary
-    
+
+
 filename = "abz5.txt"
 population_size = 30
 no_of_offsprings = 10
 no_of_generations = 20000
 mutation_rate = 0.5
 no_of_iterations = 10
-parent_selection = 2
-survival_selection = 2
+parent_selection = 3
+survival_selection = 4
 
 jssp = JSSP(
     filename=filename,
@@ -104,6 +135,13 @@ jssp = JSSP(
     no_of_iterations=no_of_iterations,
 )
 jssp.run()
+
+# jssp.read_file()
+# ch, fitness = jssp.chromosome()
+# # print(ch)
+# print(fitness)
+# print(jssp.evaluate_fitness(ch))
+
 # data = {
 #     0: [
 #         (4, 88),
