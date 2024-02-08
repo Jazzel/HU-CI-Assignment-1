@@ -67,6 +67,7 @@ class JSSP(EvolutionaryAlgorithm):
         return arr
 
     def evaluate_fitness(self, chromosome) -> float:
+<<<<<<< HEAD
         self.machine_process_time = {
             machine: 0 for machine in range(self.total_machines)
         }
@@ -93,6 +94,20 @@ class JSSP(EvolutionaryAlgorithm):
             )
         )
 
+=======
+        machine_process_time= {machine:0 for machine in range(self.total_machines)}
+        job_process_time = {job:0 for job in range(self.total_jobs)}
+        timings = {time: [0, 0] for time in self.operations_data.values()}
+        for i in range(len(chromosome)):
+            current_process_time = self.operations_data[chromosome[i]]
+            job,machine = chromosome[i]
+            end_process_time = max(machine_process_time[machine],job_process_time[job]) + current_process_time
+            timings[chromosome[i]] = [max(machine_process_time[machine],job_process_time[job]),end_process_time]
+            machine_process_time[machine] = end_process_time
+            job_process_time[job] = end_process_time
+        return float(max(max(machine_process_time.values()),max(job_process_time.values())))
+    
+>>>>>>> ebeff02933ff394919daab682d8a447738de0fd3
     def compute_population_fitness(self, population: dict) -> dict:
         fitness_dictionary = {}
         for individual, chromosome in population.items():
