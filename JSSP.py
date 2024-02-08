@@ -44,8 +44,8 @@ class JSSP(EvolutionaryAlgorithm):
         with open(self.filename, "r") as f:
             self.comment = f.readline().strip()
             self.operations = f.readline().strip().split()
-            total_machines = int(self.operations[0])
-            total_jobs = int(self.operations[1])
+            self.total_machines = int(self.operations[0])
+            self.total_jobs = int(self.operations[1])
             line = f.readline().strip()
             self.operations_data = {}
             job_no = 0
@@ -53,7 +53,7 @@ class JSSP(EvolutionaryAlgorithm):
                 try:
                     raw_data = line.split()
                     for i in range(0,len(raw_data),2):
-                        self.operations_data[(job_no,raw_data[i])] = [raw_data]
+                        self.operations_data[tuple(job_no,raw_data[i])] = raw_data[i+1]
                     line = f.readline().strip()
                     job +=1 
                 except EOFError:
@@ -66,8 +66,16 @@ class JSSP(EvolutionaryAlgorithm):
         return arr
 
     def fitness(self, chromosome: list) -> float:
-        pass
-
+        machine_process_time= {machine:0 for machine in range(self.total_machines)}
+        job_process_time = {job:0 for job in range(self.total_jobs)}
+        for i in range(len(chromosome)):
+            current_process_time = self.operations_data[chromosome[i]]
+            job,machine = chromosome[i]
+            end_process_time = max(machine_process_time[machine],job_process_time[job]) + current_process_time
+            machine_process_time[machine] = end_process_time
+            job_process_time[job] = end_process_time
+        return float(max(max(machine_process_time.values()),max(job_process_time.values())))
+    
 filename = "abz5.txt"
 population_size = 30
 no_of_offsprings = 10
