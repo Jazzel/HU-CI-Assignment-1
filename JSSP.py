@@ -65,7 +65,7 @@ class JSSP(EvolutionaryAlgorithm):
         random.shuffle(arr)
         return arr
 
-    def fitness(self, chromosome: list) -> float:
+    def evaluate_fitness(self, chromosome) -> float:
         machine_process_time= {machine:0 for machine in range(self.total_machines)}
         job_process_time = {job:0 for job in range(self.total_jobs)}
         for i in range(len(chromosome)):
@@ -75,6 +75,12 @@ class JSSP(EvolutionaryAlgorithm):
             machine_process_time[machine] = end_process_time
             job_process_time[job] = end_process_time
         return float(max(max(machine_process_time.values()),max(job_process_time.values())))
+    
+    def compute_population_fitness(self, population: dict) -> dict:
+        fitness_dictionary = {}
+        for individual, chromosome in population.items():
+            fitness_dictionary[individual] = self.evaluate_fitness(chromosome)
+        return fitness_dictionary
     
 filename = "abz5.txt"
 population_size = 30
