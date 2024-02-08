@@ -1,7 +1,6 @@
 import random
 
-
-    # Selection schemes
+# Selection schemes
 class SelectionScheme:
 
     def fitness_proportionate_selection(self, selection_size) -> list:

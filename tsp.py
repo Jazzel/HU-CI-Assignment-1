@@ -35,7 +35,6 @@ class TSP(EvolutionaryAlgorithm):
         self.no_of_iterations = no_of_iterations
 
         self.filename = filename
-        self.name = ""
         self.comment1 = ""
         self.comment2 = ""
         self.type = ""
@@ -95,11 +94,11 @@ class TSP(EvolutionaryAlgorithm):
 filename = "qa194.tsp"
 population_size = 30
 no_of_offsprings = 10
-no_of_generations = 50000
+no_of_generations = 20000
 mutation_rate = 0.5
 no_of_iterations = 10
-parent_selection = 1
-survival_selection = 4
+parent_selection = 2
+survival_selection = 2
 
 tsp = TSP(
     filename=filename,
