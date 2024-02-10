@@ -56,22 +56,34 @@ class EAA(EvolutionaryAlgorithm):
         image = Image.open(self.target_human_image)
         image = image.resize((IMAGE_WIDTH, IMAGE_HEIGHT))
         self.target_human_image = image
+
+        # Convert the image to RGB mode
+        target_image = image.convert("RGB")
+
+        # Get the image data as a numpy array
+        image_array = np.array(target_image)
+
+        # Reshape the image data to a 2D array of pixels (rows) x RGB values (columns)
+        pixels = image_array.reshape(-1, 3)
+
+        # Randomly sample colors or use clustering algorithm to find dominant colors
+        unique_colors = np.unique(pixels, axis=0)
+
+        self.target_image_colors = unique_colors.tolist()
+
         # image.show()
 
     def chromosome(self) -> list:
         chromosome = []
         for _ in range(self.num_polygons):
             num_vertices = random.randint(3, self.max_vertices)
+            color = random.choice(self.target_image_colors)
             polygon = {
                 "vertices": [
                     (random.randint(0, IMAGE_WIDTH), random.randint(0, IMAGE_HEIGHT))
                     for _ in range(num_vertices)
                 ],
-                "color": (
-                    random.randint(0, 255),
-                    random.randint(0, 255),
-                    random.randint(0, 255),
-                ),
+                "color": color,
                 "transparency": random.uniform(0.1, 0.9),
             }
             chromosome.append(polygon)
