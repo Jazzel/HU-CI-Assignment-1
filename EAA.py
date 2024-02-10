@@ -125,14 +125,26 @@ class EAA(EvolutionaryAlgorithm):
             transparency = int(255 * polygon["transparency"])
             draw.polygon(vertices, fill=color + (transparency,))
 
-        image.save(f"images/image_{self.counter}.png")
+        # image.save(f"images/image_{self.counter}.png")
         self.counter += 1
         # image.show()
 
         return image
 
+    def save_image(self, chromosome, image_size, filename) -> Image:
+        image = Image.new("RGB", image_size, color="white")
+        draw = ImageDraw.Draw(image)
 
-population_size = 30
+        for polygon in chromosome:
+            vertices = [(x, y) for x, y in polygon["vertices"]]
+            color = tuple(polygon["color"])
+            transparency = int(255 * polygon["transparency"])
+            draw.polygon(vertices, fill=color + (transparency,))
+
+        image.save("images/" + filename + ".png")
+
+
+population_size = 100
 no_of_offsprings = 10
 no_of_generations = 20000
 mutation_rate = 0.5

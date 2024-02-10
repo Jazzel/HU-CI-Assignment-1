@@ -193,7 +193,17 @@ class EvolutionaryAlgorithm(SelectionScheme):
                 "fittest:",
                 min(self.fitness_dictionary.values()),
             )
+
+            # TODO: remove for TSP, JSSP
+            fittest = min(self.fitness_dictionary, key=self.fitness_dictionary.get)
+            self.save_image(
+                self.population[fittest],
+                (800, 800),
+                f"generation_{iteration}_fittest",
+            )
+
             iteration += 1
+
         print(min(fitnesses))
         print(max(fitnesses))
         # lst = []
