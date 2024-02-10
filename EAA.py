@@ -44,9 +44,9 @@ class EAA(EvolutionaryAlgorithm):
         self.no_of_iterations = no_of_iterations
         self.target_human_image = target_human_image
 
-        self.comment = ""
-        self.operations = []
-        self.distance_matrix = []
+        # self.comment = ""
+        # self.operations = []
+        # self.distance_matrix = []
 
         self.counter = 0
 
