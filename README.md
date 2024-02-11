@@ -85,6 +85,7 @@ A virtual environment is a self-contained directory that contains a Python insta
 
   This will generate `tsp_results/` folder and json files according to selection schemes.
   You can change selection schemes by changing tuples in `combinations` variable.
+
   `combinations =  [(1,  5),  (3,  4),  (4,  4),  (5,  5),  (1,  2),  (1,  4),  (2,  4)]`
 
 - To run jssp:
@@ -95,6 +96,7 @@ A virtual environment is a self-contained directory that contains a Python insta
 
   This will generate `jssp_results/` folder and images files according to selection schemes.
   You can change selection schemes by changing tuples in `combinations` variable.
+
   `combinations =  [(1,  5),  (3,  4),  (4,  4),  (5,  5),  (1,  2),  (1,  4),  (2,  4)]`
 
 - To run EAA (Mona Lisa):
