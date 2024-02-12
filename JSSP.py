@@ -98,6 +98,7 @@ class JSSP(EvolutionaryAlgorithm):
         for individual, chromosome in population.items():
             fitness_dictionary[individual] = self.evaluate_fitness(chromosome)
         return fitness_dictionary
+    
 
 
 filename = "abz5.txt"

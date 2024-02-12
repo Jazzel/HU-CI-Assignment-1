@@ -132,19 +132,41 @@ class EAA(EvolutionaryAlgorithm):
             transparency = int(255 * polygon["transparency"])
             draw.polygon(vertices, fill=color + (transparency,))
 
-        image.save("images/" + filename + ".png")
+        image.save("images3/" + filename + ".png")
 
-
-population_size = 30
+    def mutation(self) -> None:
+        if random.random() < self.mutation_rate:
+            num_vertices = random.randint(3, self.max_vertices)
+            for individual in self.offsprings.keys():
+                index1 = random.randint(0, len(self.offsprings[individual]) - 1)
+                index2 = random.randint(0, len(self.offsprings[individual]) - 1)
+                self.offsprings[individual][index1] = {
+                    "vertices": [
+                        (random.randint(0, IMAGE_WIDTH), random.randint(0, IMAGE_HEIGHT))
+                        for _ in range(num_vertices)
+                    ],
+                    "color": random.choice(self.target_image_colors),
+                    "transparency": float(0.5),
+                    }
+                self.offsprings[individual][index2] = {
+                    "vertices": [
+                        (random.randint(0, IMAGE_WIDTH), random.randint(0, IMAGE_HEIGHT))
+                        for _ in range(num_vertices)
+                    ],
+                    "color": random.choice(self.target_image_colors),
+                    "transparency": float(0.5),
+                    }
+                
+population_size = 10
 no_of_offsprings = 10
-no_of_generations = 20000
+no_of_generations = 10000
 mutation_rate = 1
-no_of_iterations = 10
-parent_selection = 3
-survival_selection = 1
+no_of_iterations = 1
+parent_selection = 1
+survival_selection = 4
 num_polygons = 50
 max_vertices = 6
-target_human_image = "mona_lisa.jpg"
+target_human_image = "tom_jerry.jpg"
 
 eaa = EAA(
     parent_selection_scheme=parent_selection,

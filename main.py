@@ -184,7 +184,7 @@ class EvolutionaryAlgorithm(SelectionScheme):
             self.fitness_dictionary = self.compute_population_fitness(self.population)
 
             # print("population (survivors):", len(self.population))
-            print(self.fitness_dictionary.values())
+            # print(self.fitness_dictionary.values())
             avg_fitness = np.array(list(self.fitness_dictionary.values())).mean()
             fitnesses.append(avg_fitness)
             print(
