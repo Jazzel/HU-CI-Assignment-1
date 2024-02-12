@@ -1,11 +1,11 @@
 import random
 
 from main import EvolutionaryAlgorithm
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageChops
 import numpy as np
 
-IMAGE_WIDTH = 800
-IMAGE_HEIGHT = 800
+IMAGE_WIDTH = 200
+IMAGE_HEIGHT = 200
 
 
 class EAA(EvolutionaryAlgorithm):
@@ -84,23 +84,16 @@ class EAA(EvolutionaryAlgorithm):
                     for _ in range(num_vertices)
                 ],
                 "color": color,
-                "transparency": random.uniform(0.1, 0.9),
+                "transparency": float(0.5),
             }
             chromosome.append(polygon)
         return chromosome
 
     def compute_fitness(self, rendered_image, target_human_image) -> float:
+        diff = ImageChops.difference(rendered_image, target_human_image)
+        totdiff = np.array(diff.getdata()).sum()
 
-        rendered_array = np.array(rendered_image)
-        target_array = np.array(target_human_image)
-
-        diff = np.sum(np.abs(rendered_array - target_array))
-
-        normalized_diff = diff / (
-            self.target_human_image.size[0] * self.target_human_image.size[1] * 3 * 255
-        )
-
-        return normalized_diff
+        return totdiff
 
     def evaluate_fitness(self, chromosome) -> float:
         rendered_image = self.render_individual(
@@ -117,28 +110,38 @@ class EAA(EvolutionaryAlgorithm):
 
     def render_individual(self, chromosome, image_size) -> Image:
         image = Image.new("RGB", image_size, color="white")
-        draw = ImageDraw.Draw(image)
-
+        draw = ImageDraw.Draw(image,"RGBA")
         for polygon in chromosome:
             vertices = [(x, y) for x, y in polygon["vertices"]]
             color = tuple(polygon["color"])
             transparency = int(255 * polygon["transparency"])
             draw.polygon(vertices, fill=color + (transparency,))
 
-        image.save(f"images/image_{self.counter}.png")
+        # image.save(f"images/image_{self.counter}.png")
         self.counter += 1
         # image.show()
 
         return image
 
+    def save_image(self, chromosome, image_size, filename) -> Image:
+        image = Image.new("RGB", image_size, color="white")
+        draw = ImageDraw.Draw(image,"RGBA")
+        for polygon in chromosome:
+            vertices = [(x, y) for x, y in polygon["vertices"]]
+            color = tuple(polygon["color"])
+            transparency = int(255 * polygon["transparency"])
+            draw.polygon(vertices, fill=color + (transparency,))
+
+        image.save("images/" + filename + ".png")
+
 
 population_size = 30
 no_of_offsprings = 10
 no_of_generations = 20000
-mutation_rate = 0.5
+mutation_rate = 1
 no_of_iterations = 10
-parent_selection = 2
-survival_selection = 4
+parent_selection = 3
+survival_selection = 1
 num_polygons = 50
 max_vertices = 6
 target_human_image = "mona_lisa.jpg"

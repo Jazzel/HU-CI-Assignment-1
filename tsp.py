@@ -97,8 +97,8 @@ no_of_offsprings = 10
 no_of_generations = 20000
 mutation_rate = 0.5
 no_of_iterations = 10
-parent_selection = 2
-survival_selection = 2
+parent_selection = 1
+survival_selection = 4
 
 tsp = TSP(
     filename=filename,

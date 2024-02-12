@@ -1,5 +1,5 @@
 import random
-
+import numpy as np
 from selectionSchemes import SelectionScheme
 
 
@@ -136,7 +136,6 @@ class EvolutionaryAlgorithm(SelectionScheme):
             print("Invalid selection scheme")
 
         updatedPopulation = []
-        # updatedPopulation.append(self.population[fittest_individual])
         for index in survivers:
             updatedPopulation.append(self.population[index])
         self.population = {
@@ -185,7 +184,8 @@ class EvolutionaryAlgorithm(SelectionScheme):
             self.fitness_dictionary = self.compute_population_fitness(self.population)
 
             # print("population (survivors):", len(self.population))
-            avg_fitness = round(sum(self.fitness_dictionary.values()) / 30, 2)
+            print(self.fitness_dictionary.values())
+            avg_fitness = np.array(list(self.fitness_dictionary.values())).mean()
             fitnesses.append(avg_fitness)
             print(
                 "avg_fitness:",
@@ -193,12 +193,18 @@ class EvolutionaryAlgorithm(SelectionScheme):
                 "fittest:",
                 min(self.fitness_dictionary.values()),
             )
+
+            # TODO: remove for TSP, JSSP
+            fittest = min(self.fitness_dictionary, key=self.fitness_dictionary.get)
+            if iteration % 50 == 0 :
+                self.save_image(
+                    self.population[fittest],
+                    (200, 200),
+                    f"generation_{iteration}_fittest",
+                )
+
             iteration += 1
+
         print(min(fitnesses))
         print(max(fitnesses))
-        # lst = []
-        # for i in range(len(fittest_individual)):
-        #     if fittest_individual[i] not in lst:
-        #         lst.append(fittest_individual[i])
-        #     else:
-        #         print("Duplicate")
+
