@@ -1,6 +1,7 @@
 # CI Assignment 1
 
 URL : [https://github.com/Jazzel/HU-CI-Assignment-1](https://github.com/Jazzel/HU-CI-Assignment-1)
+Report: [https://github.com/Jazzel/HU-CI-Assignment-1/blob/main/CI%20assignment%201%20MM06886-AK06857.pdf](https://github.com/Jazzel/HU-CI-Assignment-1/blob/main/CI%20assignment%201%20MM06886-AK06857.pdf)
 
 ## File Hierarchy
 
