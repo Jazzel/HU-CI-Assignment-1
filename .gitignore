@@ -2,3 +2,5 @@ __pycache__
 test.py
 env
 images/*
+jssp_results/*.json
+tsp_results/*.json
